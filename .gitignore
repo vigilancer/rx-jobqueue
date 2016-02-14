@@ -1,6 +1,8 @@
 # IDEA / AS
 .idea/
 *.iml
+*.ipr
+*.iws
 
 # Gradle
 .gradle
