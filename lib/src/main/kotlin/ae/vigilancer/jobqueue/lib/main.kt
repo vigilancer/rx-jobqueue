@@ -61,12 +61,6 @@ object RequestsManager {
         return _manager
     }
 
-//    fun <T> Observable<T>.compose(ts: Iterable<Observable.Transformer<T, T>>): Observable<T> {
-//        var o = this@compose
-//        ts.forEach { t -> o = o.compose(t) }
-//        return o
-//    }
-
     fun <T> Observable<T>.compose(ts: Iterable<(Observable<T>) -> Observable<T>>): Observable<T> {
         var o = this@compose
         ts.forEach { t -> o = o.compose(t) }
