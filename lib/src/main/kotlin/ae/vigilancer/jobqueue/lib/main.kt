@@ -53,7 +53,7 @@ object RequestsManager {
 
     }
 
-    fun <O> request(job: Job<O>) {
+    fun <T> request(job: Job<T>) {
         _queue.onNext(job)
     }
 
