@@ -1,0 +1,27 @@
+apply plugin: 'kotlin'
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+sourceSets {
+    main.java.srcDirs += 'src/main/kotlin'
+    test.java.srcDirs += 'src/test/kotlin'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'ae.vigilancer.jobqueue.sample.console.MainKt'
+    }
+    // так делаем fat-jar.
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+}
+
+
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.ext.kotlin_version"
+    compile project (":lib")
+}
+

@@ -1,0 +1,33 @@
+buildscript {
+    ext {
+        sdk_version = 23
+        build_tools_version = "23.0.2"
+        support_version = "23.1.1"
+        gradle_plugin_version = "1.5.0"
+        kotlin_version = "1.0.0-rc-1036"  // 1103, 2423, 3595, 4583, 4584, rc-1036
+        anko_version = "0.8.2"
+        rx_version = "1.1.0"
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "com.android.tools.build:gradle:$gradle_plugin_version"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+allprojects {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+}
+
+apply plugin: 'idea'
+idea {
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}

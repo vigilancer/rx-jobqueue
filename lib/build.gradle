@@ -1,0 +1,23 @@
+apply plugin: 'kotlin'
+
+//repositories {
+//    mavenCentral()
+//}
+
+sourceSets {
+    main.java.srcDirs += 'src/main/kotlin'
+    test.java.srcDirs += 'src/test/kotlin'
+}
+
+test {
+    testLogging {
+        showStandardStreams = true
+        exceptionFormat = 'full'
+    }
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.ext.kotlin_version"
+    compile 'io.reactivex:rxjava:1.1.1'
+}
+
