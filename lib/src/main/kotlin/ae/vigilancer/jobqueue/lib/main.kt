@@ -38,7 +38,7 @@ object RequestsManager {
     private val _queue: Subject<Job<*>, Job<*>> = SerializedSubject(PublishSubject.create())
 
 
-    fun init(vararg transformers: Observable.Transformer<Job<*>,Job<*>>) {
+    fun init(vararg transformers: (Observable<Job<*>>) -> Observable<Job<*>>) {
         _queue.compose(transformers.asIterable())
             .subscribe(Observers.create(
                 { j ->
@@ -61,7 +61,13 @@ object RequestsManager {
         return _manager
     }
 
-    fun <T> Observable<T>.compose(ts: Iterable<Observable.Transformer<T, T>>): Observable<T> {
+//    fun <T> Observable<T>.compose(ts: Iterable<Observable.Transformer<T, T>>): Observable<T> {
+//        var o = this@compose
+//        ts.forEach { t -> o = o.compose(t) }
+//        return o
+//    }
+
+    fun <T> Observable<T>.compose(ts: Iterable<(Observable<T>) -> Observable<T>>): Observable<T> {
         var o = this@compose
         ts.forEach { t -> o = o.compose(t) }
         return o

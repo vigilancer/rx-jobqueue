@@ -10,7 +10,7 @@ fun main(args : Array<String>) {
 
     println("waiting for response")
 
-    RequestsManager.init(LogJobsBeforeTransformers(), PreventDoubleFiring(), LogJobsAfterTransformers())
+    RequestsManager.init(LogJobsBeforeTransformers, PreventDoubleFiring, LogJobsAfterTransformers)
 
 
     RequestsManager.toObservable()
@@ -51,22 +51,16 @@ class UpdatePostJob() : Job<String>(), IPreventDoubleFiring {
  * Пример расширения возможностей [RequestsManager]-а
  * Добавляем возможность отбрасывания повторных срабатываний запросов
  */
-class PreventDoubleFiring : Observable.Transformer<Job<*>, Job<*>> {
-    override fun call(original: Observable<Job<*>>): Observable<Job<*>> {
-        return original.distinctUntilChanged{ if (it is IPreventDoubleFiring) it.javaClass.canonicalName else it.uuid }
-    }
+val PreventDoubleFiring: (Observable<Job<*>>) -> Observable<Job<*>> = { o ->
+    o.distinctUntilChanged{ if (it is IPreventDoubleFiring) it.javaClass.canonicalName else it.uuid }
 }
 
 interface IPreventDoubleFiring {}
 
-class LogJobsBeforeTransformers : Observable.Transformer<Job<*>, Job<*>> {
-    override fun call(original: Observable<Job<*>>): Observable<Job<*>> {
-        return original.map { println("before job: ${it.javaClass.simpleName} \t\t${it.uuid}"); it }
-    }
+val LogJobsBeforeTransformers : (Observable<Job<*>>) -> Observable<Job<*>> = { o ->
+    o.map { println("before job: ${it.javaClass.simpleName} \t\t${it.uuid}"); it }
 }
 
-class LogJobsAfterTransformers : Observable.Transformer<Job<*>, Job<*>> {
-    override fun call(original: Observable<Job<*>>): Observable<Job<*>> {
-        return original.map { println("after job: ${it.javaClass.simpleName} \t\t${it.uuid}"); it }
-    }
+val LogJobsAfterTransformers : (Observable<Job<*>>) -> Observable<Job<*>> = { o ->
+    o.map { println("after job: ${it.javaClass.simpleName} \t\t${it.uuid}"); it }
 }
