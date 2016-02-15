@@ -48,8 +48,8 @@ class UpdatePostJob() : Job<String>(), IPreventDoubleFiring {
 }
 
 /**
- * Пример расширения возможностей [RequestsManager]-а
- * Добавляем возможность отбрасывания повторных срабатываний запросов
+ * Example of extension for [RequestsManager]
+ * Adding capability to filter out adjacent duplicate jobs
  */
 val PreventDoubleFiring: (Observable<Job<*>>) -> Observable<Job<*>> = { o ->
     o.distinctUntilChanged{ if (it is IPreventDoubleFiring) it.javaClass.canonicalName else it.uuid }
