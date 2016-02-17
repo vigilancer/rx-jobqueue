@@ -9,7 +9,7 @@ import java.util.*
 
 object RequestsManager {
 
-    private val _manager: Subject<Any, Any> = SerializedSubject(PublishSubject.create())
+    private val _manager: Subject<Job<*>, Job<*>> = SerializedSubject(PublishSubject.create())
     private val _queue: Subject<Job<*>, Job<*>> = SerializedSubject(PublishSubject.create())
 
 
@@ -17,7 +17,7 @@ object RequestsManager {
         _queue.compose(transformers.asIterable())
             .subscribe(Observers.create(
                 { j ->
-                    j.run()
+                    j.runForResult()
                         .subscribe(Observers.create(
                             { a -> _manager.onNext(a) },
                             { e -> _manager.onError(e) }
@@ -25,14 +25,13 @@ object RequestsManager {
                 },
                 { e -> _manager.onError(e) }
             ))
-
     }
 
     fun <T> request(job: Job<T>) {
         _queue.onNext(job)
     }
 
-    fun toObservable(): Observable<Any>  {
+    fun toObservable(): Observable<*>  {
         return _manager
     }
 
@@ -43,8 +42,19 @@ object RequestsManager {
     }
 }
 
-abstract class Job<T>() {
+abstract class Job<R> {
     val uuid: String by lazy { UUID.randomUUID().toString() }
 
-    abstract fun run(): Observable<T>
+    var result: R? = null
+    abstract fun run(): Observable<R?>
+
+    fun <T: Job<R>> T.`this`() = this
+
+    fun <T: Job<R>> T.wrapResult(): Observable<T> {
+        return run().map { r -> this.result = r; this }.map { `this`() }
+    }
+
+    fun runForResult(): Observable<Job<R>> {
+        return wrapResult()
+    }
 }

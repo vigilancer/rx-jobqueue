@@ -12,18 +12,37 @@ fun main(args : Array<String>) {
 
     RequestsManager.init(LogJobsBeforeTransformers, PreventDoubleFiring, LogJobsAfterTransformers)
 
+    var specialJobId: String? = null
 
     RequestsManager.toObservable()
         .subscribe(
-            {s -> println("result: \t$s") },
+            {s ->
+                println("result: \t$s")
+            },
             {e -> println("error: $e")},
-            { println ("onComplete") }
+            { println ("first onComplete") }
+    )
+
+    RequestsManager.toObservable().subscribe(
+        { s ->
+            if (s is GetUserJob) {
+                println("getting user!: ${s.result}")
+            }
+            if (s is Job<*> && s.uuid == specialJobId) {
+                println("found special!1: $specialJobId")
+            }
+
+        },
+        {e -> println("error: $e")},
+        { println ("second onComplete") }
     )
 
     Observable.interval(3, TimeUnit.SECONDS).timeInterval().take(5).toBlocking().subscribe(
         {
             RequestsManager.request(GetUserJob())
-            RequestsManager.request(UpdatePostJob())
+            val specialJob = UpdatePostJob()
+            specialJobId = specialJob.uuid
+            RequestsManager.request(specialJob)
             RequestsManager.request(UpdatePostJob())
             RequestsManager.request(UpdatePostJob())
             RequestsManager.request(UpdatePostJob())
@@ -35,14 +54,13 @@ fun main(args : Array<String>) {
 }
 
 class GetUserJob() : Job<String>() {
-
-    override fun run(): Observable<String> {
+    override fun run(): Observable<String?> {
         return Observable.just("_get_user_ ($uuid)").delay(1, TimeUnit.SECONDS)
     }
 }
 
 class UpdatePostJob() : Job<String>(), IPreventDoubleFiring {
-    override fun run(): Observable<String> {
+    override fun run(): Observable<String?> {
         return Observable.just("_update_post_ ($uuid)").delay(1L + Random().nextInt((3 - 1) + 1), TimeUnit.SECONDS)
     }
 }
