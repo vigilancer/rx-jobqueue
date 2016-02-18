@@ -48,10 +48,8 @@ abstract class Job<R> {
     var result: R? = null
     abstract fun run(): Observable<R?>
 
-    fun <T: Job<R>> T.`this`() = this
-
     fun <T: Job<R>> T.wrapResult(): Observable<T> {
-        return run().map { r -> this.result = r; this }.map { `this`() }
+        return run().map { r -> this.result = r; this }
     }
 
     fun runForResult(): Observable<Job<R>> {
