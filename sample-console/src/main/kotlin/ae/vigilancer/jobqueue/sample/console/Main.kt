@@ -10,11 +10,12 @@ fun main(args : Array<String>) {
 
     println("waiting for response")
 
-    RequestsManager.init(LogJobsBeforeTransformers, PreventDoubleFiring, LogJobsAfterTransformers)
+    val rm = RequestsManager()
+    rm.init(LogJobsBeforeTransformers, PreventDoubleFiring, LogJobsAfterTransformers)
 
     var specialJobId: String? = null
 
-    RequestsManager.toObservable()
+    rm.toObservable()
         .subscribe(
             {s ->
                 println("result: \t$s")
@@ -23,7 +24,7 @@ fun main(args : Array<String>) {
             { println ("first onComplete") }
     )
 
-    RequestsManager.toObservable().subscribe(
+    rm.toObservable().subscribe(
         { s ->
             if (s is GetUserJob) {
                 println("getting user!: ${s.result}")
@@ -39,13 +40,13 @@ fun main(args : Array<String>) {
 
     Observable.interval(3, TimeUnit.SECONDS).timeInterval().take(5).toBlocking().subscribe(
         {
-            RequestsManager.request(GetUserJob())
+            rm.request(GetUserJob())
             val specialJob = UpdatePostJob()
             specialJobId = specialJob.uuid
-            RequestsManager.request(specialJob)
-            RequestsManager.request(UpdatePostJob())
-            RequestsManager.request(UpdatePostJob())
-            RequestsManager.request(UpdatePostJob())
+            rm.request(specialJob)
+            rm.request(UpdatePostJob())
+            rm.request(UpdatePostJob())
+            rm.request(UpdatePostJob())
         },
         { println(it)},
         { Thread.sleep(6000)}

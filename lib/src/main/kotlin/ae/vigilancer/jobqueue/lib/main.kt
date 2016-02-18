@@ -7,7 +7,8 @@ import rx.subjects.SerializedSubject
 import rx.subjects.Subject
 import java.util.*
 
-object RequestsManager {
+class RequestsManager {
+    private val DEBUG = false
 
     private val _manager: Subject<Job<*>, Job<*>> = SerializedSubject(PublishSubject.create())
     private val _queue: Subject<Job<*>, Job<*>> = SerializedSubject(PublishSubject.create())
@@ -15,9 +16,11 @@ object RequestsManager {
 
     fun init(vararg transformers: (Observable<Job<*>>) -> Observable<Job<*>>) {
         _queue.compose(transformers.asIterable())
+            .doOnSubscribe { if (DEBUG) println("onSubscribe [_queue]") }
             .subscribe(Observers.create(
                 { j ->
                     j.runForResult()
+                        .doOnSubscribe { if (DEBUG) println("onSubscribe [job] (${j.uuid})") }
                         .subscribe(Observers.create(
                             { a -> _manager.onNext(a) },
                             { e -> _manager.onError(e) }
@@ -31,8 +34,9 @@ object RequestsManager {
         _queue.onNext(job)
     }
 
-    fun toObservable(): Observable<*>  {
+    fun toObservable(): Observable<Job<*>>  {
         return _manager
+            .doOnSubscribe { if (DEBUG) println("onSubscribe [_manager]") }
     }
 
     fun <T> Observable<T>.compose(ts: Iterable<(Observable<T>) -> Observable<T>>): Observable<T> {
@@ -54,5 +58,14 @@ abstract class Job<R> {
 
     fun runForResult(): Observable<Job<R>> {
         return wrapResult()
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (other !is Job<*>) return false
+        return uuid == other.uuid
+    }
+
+    override fun hashCode(): Int {
+        return uuid.hashCode()
     }
 }
