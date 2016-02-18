@@ -47,7 +47,7 @@ class RequestsManager {
 }
 
 abstract class Job<R> {
-    val uuid: String by lazy { UUID.randomUUID().toString() }
+    val uuid: String = UUID.randomUUID().toString()
 
     var result: R? = null
     abstract fun run(): Observable<R?>

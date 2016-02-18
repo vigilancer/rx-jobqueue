@@ -116,7 +116,6 @@ class SimpleTest() {
         assert(thisJobs.isEmpty() == true)
         assert(thatJobs.isEmpty() == true)
         testScheduler.advanceTimeBy(10, TimeUnit.MINUTES)
-        println("size: ${thisJobs.size}")
         assert(thisJobs.size == 3)
         assert(thatJobs.size == 2)
         assert(thisJobs[0] is SimpleJob)
@@ -143,11 +142,8 @@ class SimpleTest() {
     // проверки [RequestsManager]
     // проверка что transformer применяются
     // проверка что трансформеры применяются в том же порядке, что и заданы в init()
+    // (выполнение контракта) сквозь RequestsManager могут безболезненно проходить null-ы
 
-
-    // проверки Job-ов
-    // hashCode() и isEqual()
-    //
 }
 
 
