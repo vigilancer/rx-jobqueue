@@ -1,11 +1,15 @@
 package ae.vigilancer.jobqueue.lib
 
+import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 
 @RunWith(JUnit4::class)
 class RequestsManagerContractTest {
 
+    @Test
+    fun stub() {
+    }
 
     // проверки [RequestsManager]
     // проверка что transformer применяются
