@@ -1,5 +1,5 @@
 
-- [ ] subscribe on specific jobs results  
+- [x] subscribe on specific jobs results  
 - [ ] caching jobs results until someone will subscribe for results  
 - [ ] consistent error handling  
 - [ ] write tests  
