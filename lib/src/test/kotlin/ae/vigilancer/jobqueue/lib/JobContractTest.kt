@@ -1,6 +1,7 @@
 package ae.vigilancer.jobqueue.lib
 
 import nl.jqno.equalsverifier.EqualsVerifier
+import org.assertj.core.api.Assertions.assertThat
 import org.testng.annotations.Test
 import rx.Observable
 
@@ -34,5 +35,15 @@ class JobContractTest {
         EqualsVerifier.forClass(EmptyJob::class.java).verify()
         EqualsVerifier.forClass(WithPrimitiveFieldsJob::class.java).verify()
         EqualsVerifier.forClass(WithClassFieldsJob::class.java).verify()
+    }
+
+    @Test
+    fun `can reassign Job's result`() {
+        val j = EmptyJob()
+        assertThat(j.result).isNull()
+        j.result = 22
+        assertThat(j.result!!).isEqualTo(22)
+        j.result = 23
+        assertThat(j.result!!).isEqualTo(23)
     }
 }
