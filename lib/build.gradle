@@ -11,9 +11,20 @@ sourceSets {
 
 //noinspection GroovyMissingReturnStatement
 test {
+    useTestNG {
+        preserveOrder true
+    }
+    reports {
+        junitXml.enabled = false
+        html.enabled = false
+    }
     testLogging {
         showStandardStreams = true
-        exceptionFormat = 'full'
+        displayGranularity = -1
+        showExceptions = true
+        showCauses = true
+        showStackTraces = true
+        exceptionFormat = "full"
     }
 }
 
@@ -21,7 +32,8 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.ext.kotlin_version"
     compile 'io.reactivex:rxjava:1.1.1'
 
-    testCompile 'junit:junit:4.12'
+    testCompile 'org.testng:testng:6.9.10'
+    testCompile 'org.assertj:assertj-core:3.3.0'
     testCompile 'nl.jqno.equalsverifier:equalsverifier:1.7.7'
 }
 

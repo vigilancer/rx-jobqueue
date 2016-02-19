@@ -1,12 +1,10 @@
 package ae.vigilancer.jobqueue.lib
 
 import nl.jqno.equalsverifier.EqualsVerifier
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.junit.runners.JUnit4
+import org.testng.annotations.Test
 import rx.Observable
 
-@RunWith(JUnit4::class)
+@Test
 class JobContractTest {
 
     class EmptyJob : Job<Int>() {

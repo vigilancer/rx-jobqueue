@@ -1,10 +1,8 @@
 package ae.vigilancer.jobqueue.lib
 
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.junit.runners.JUnit4
+import org.testng.annotations.Test
 
-@RunWith(JUnit4::class)
+@Test
 class RequestsManagerContractTest {
 
     @Test

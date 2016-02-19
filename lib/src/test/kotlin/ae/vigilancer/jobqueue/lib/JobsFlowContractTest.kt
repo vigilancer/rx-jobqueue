@@ -1,16 +1,14 @@
 package ae.vigilancer.jobqueue.lib
 
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.junit.runners.JUnit4
+import org.assertj.core.api.Assertions.assertThat
+import org.testng.annotations.Test
 import rx.Observable
 import rx.observers.TestSubscriber
 import rx.schedulers.TestScheduler
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-
-@RunWith(JUnit4::class)
+@Test
 class JobsFlowContractTest() {
 
     val testScheduler = TestScheduler()
@@ -35,8 +33,8 @@ class JobsFlowContractTest() {
         rm.request(SimpleJob())
 
         testSubscriber.assertNoErrors()
-        assert(testSubscriber.onNextEvents.size == 1)
-        assert(testSubscriber.onNextEvents[0].result == SimpleJob.RESULT)
+        assertThat(testSubscriber.onNextEvents).hasSize(1)
+        assertThat(testSubscriber.onNextEvents[0].result).isEqualTo(SimpleJob.RESULT)
     }
 
     // простая проверка что Job проходит сквозь RequestsManager и результат приходит
@@ -52,9 +50,9 @@ class JobsFlowContractTest() {
         Observable.just(SimpleJob()).subscribeOn(testScheduler).observeOn(testScheduler)
             .subscribe{ rm.request(it) }
 
-        assert(result.isEmpty() == true)
+        assertThat(result).isEmpty()
         testScheduler.advanceTimeBy(1, TimeUnit.MINUTES)
-        assert(result.size == 1)
+        assertThat(result).hasSize(1)
     }
 
     // проверка что задача отлавливается по uuid
@@ -77,10 +75,10 @@ class JobsFlowContractTest() {
             .subscribe{ rm.request(it) }
 
 
-        assert(result.isEmpty() == true)
+        assertThat(result).isEmpty()
         testScheduler.advanceTimeBy(10, TimeUnit.MINUTES)
-        assert(result.size == 2)
-        assert(result[0].uuid == specialJob.uuid)
+        assertThat(result).hasSize(2)
+        assertThat(result[0].uuid).isEqualTo(specialJob.uuid)
     }
 
     // что задача отлавливается по своему типу
@@ -113,13 +111,13 @@ class JobsFlowContractTest() {
         feed.subscribeOn(testScheduler).observeOn(testScheduler)
             .subscribe{ rm.request(it) }
 
-        assert(thisJobs.isEmpty() == true)
-        assert(thatJobs.isEmpty() == true)
+        assertThat(thisJobs).isEmpty()
+        assertThat(thatJobs).isEmpty()
         testScheduler.advanceTimeBy(10, TimeUnit.MINUTES)
-        assert(thisJobs.size == 3)
-        assert(thatJobs.size == 2)
-        assert(thisJobs[0] is SimpleJob)
-        assert(thatJobs[0] is OtherJob)
+        assertThat(thisJobs).hasSize(3)
+        assertThat(thatJobs).hasSize(2)
+        assertThat(thisJobs[0]).isExactlyInstanceOf(SimpleJob::class.java)
+        assertThat(thatJobs[0]).isExactlyInstanceOf(OtherJob::class.java)
     }
 
 
