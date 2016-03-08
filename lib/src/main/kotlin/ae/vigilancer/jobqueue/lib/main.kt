@@ -7,7 +7,7 @@ import rx.subjects.SerializedSubject
 import rx.subjects.Subject
 
 class RequestsManager {
-    private val DEBUG = true
+    private val DEBUG = false
 
     private val _manager: Subject<Job<*>, Job<*>> = SerializedSubject(PublishSubject.create())
     private val _queue: Subject<Job<*>, Job<*>> = SerializedSubject(PublishSubject.create())
