@@ -39,8 +39,6 @@ class RequestsManager {
     }
 
     fun <T> Observable<T>.compose(ts: Iterable<(Observable<T>) -> Observable<T>>): Observable<T> {
-        var o = this@compose
-        ts.forEach { t -> o = o.compose(t) }
-        return o
+        return ts.fold(this) { acc, next -> acc.compose(next) }
     }
 }
